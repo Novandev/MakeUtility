@@ -1,15 +1,16 @@
-
 package main
 
 import (
 	"fmt"
+
 	"github.com/urfave/cli"
+
+	// "github.com/imroc/req"
 	"log"
 	"os"
 )
 
-
-func main(){
+func main() {
 	//authErr := godotenv.Load()
 	//if authErr != nil {
 	//	log.Fatal("Error loading .env file")
@@ -27,25 +28,23 @@ func main(){
 	app.Name = "novastore"
 	app.Usage = "An easier way to store your files on AWS"
 
-	myFlags := []cli.Flag {
+	myFlags := []cli.Flag{
 		cli.StringFlag{
-			Name: "file",
+			Name:  "file",
 			Value: "No File Given",
 			Usage: "This uploads a target CSV file to our system to be either predicted on or analyzed",
 		},
 		cli.StringFlag{
-			Name: "username",
+			Name:  "username",
 			Value: "No username given",
 			Usage: "This sets the user name for the account to be accessed",
 		},
 		cli.StringFlag{
-			Name: "password",
+			Name:  "password",
 			Value: "No password given",
 			Usage: "This sets the password for the account to be accessed",
 		},
 	}
-
-
 
 	app.Commands = []cli.Command{
 		{
@@ -56,7 +55,7 @@ func main(){
 			// we execute our `upload` command
 			Action: func(c *cli.Context) error {
 				// a simple lookup function
-				 fmt.Println(c.String("file"))
+				fmt.Println(c.String("file"))
 				//if err != nil {
 				//	return err
 				//}
@@ -89,12 +88,17 @@ func main(){
 			// we execute our `signup` command
 			Action: func(c *cli.Context) error {
 				// a simple lookup function
-				fmt.Println(c.String("username"))
-				fmt.Println(c.String("password"))
-				//if err != nil {
-				//	return err
-				//}
-
+				// fmt.Println(c.String("username"))
+				// fmt.Println(c.String("password"))
+				// header := req.Header{
+				// 	"Accept":        "application/json",
+				// }
+				// param := req.Param{
+				// 	"username": c.String("username"),
+				// 	"password": c.String("password"),
+				// }
+				r, _ :=req.Post(url, param) 
+				fmt.Println(r)
 				return nil
 			},
 		},
