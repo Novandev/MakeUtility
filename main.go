@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/imroc/req"
 	"github.com/urfave/cli"
 
 	// "github.com/imroc/req"
@@ -35,9 +36,9 @@ func main() {
 			Usage: "This uploads a target CSV file to our system to be either predicted on or analyzed",
 		},
 		cli.StringFlag{
-			Name:  "username",
-			Value: "No username given",
-			Usage: "This sets the user name for the account to be accessed",
+			Name:  "email",
+			Value: "No email given",
+			Usage: "This sets the email for the account to be accessed",
 		},
 		cli.StringFlag{
 			Name:  "password",
@@ -73,9 +74,19 @@ func main() {
 				// a simple lookup function
 				fmt.Println(c.String("username"))
 				fmt.Println(c.String("password"))
-				//if err != nil {
-				//	return err
-				//}
+				header := req.Header{
+					"Content-Type": "application/json",
+				}
+				param := req.Param{
+					"email":    c.String("email"),
+					"password": c.String("password"),
+				}
+				r, err := req.Post("http://localhost:3000/login", header, req.BodyJSON(param))
+				if err != nil {
+					log.Fatal(err)
+				}
+				fmt.Println(r)
+				return nil
 
 				return nil
 			},
@@ -88,16 +99,19 @@ func main() {
 			// we execute our `signup` command
 			Action: func(c *cli.Context) error {
 				// a simple lookup function
-				// fmt.Println(c.String("username"))
-				// fmt.Println(c.String("password"))
-				// header := req.Header{
-				// 	"Accept":        "application/json",
-				// }
-				// param := req.Param{
-				// 	"username": c.String("username"),
-				// 	"password": c.String("password"),
-				// }
-				r, _ :=req.Post(url, param) 
+				fmt.Println(c.String("email"))
+				fmt.Println(c.String("password"))
+				header := req.Header{
+					"Content-Type": "application/json",
+				}
+				param := req.Param{
+					"email":    c.String("email"),
+					"password": c.String("password"),
+				}
+				r, err := req.Post("http://localhost:3000/register", header, req.BodyJSON(param))
+				if err != nil {
+					log.Fatal(err)
+				}
 				fmt.Println(r)
 				return nil
 			},
