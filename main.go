@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"path/filepath"
+	"reflect"
+
+	"log"
+	"os"
 
 	"github.com/imroc/req"
 	"github.com/urfave/cli"
-
-	// "github.com/imroc/req"
-	"log"
-	"os"
 )
 
 func main() {
@@ -56,11 +57,20 @@ func main() {
 			// we execute our `upload` command
 			Action: func(c *cli.Context) error {
 				// a simple lookup function
-				fmt.Println(c.String("file"))
-				//if err != nil {
-				//	return err
-				//}
+				file, _ := os.Open(c.String("file"))
 
+				_, filename := filepath.Split(c.String("file"))
+
+				fmt.Println(filename)
+				r, err := req.Post("http://dca-novanstoreapi.herokuapp.com/upload", req.FileUpload{
+					File:      file,
+					FieldName: "file",   // FieldName is form field name
+					FileName:  filename, //Filename is the name of the file that you wish to upload. We use this to guess the mimetype as well as pass it onto the server
+				})
+				if err != nil {
+					log.Fatal(err)
+				}
+				fmt.Println(r)
 				return nil
 			},
 		},
@@ -81,7 +91,7 @@ func main() {
 					"email":    c.String("email"),
 					"password": c.String("password"),
 				}
-				r, err := req.Post("http://localhost:3000/login", header, req.BodyJSON(param))
+				r, err := req.Post("http://dca-novanstoreapi.herokuapp.com/login", header, req.BodyJSON(param))
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -108,7 +118,7 @@ func main() {
 					"email":    c.String("email"),
 					"password": c.String("password"),
 				}
-				r, err := req.Post("http://localhost:3000/register", header, req.BodyJSON(param))
+				r, err := req.Post("http://dca-novanstoreapi.herokuapp.com/register", header, req.BodyJSON(param))
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -132,10 +142,42 @@ func main() {
 				return nil
 			},
 		},
+		{
+			Name:  "stats",
+			Usage: "returns your statistics on a given file in json format",
+			Flags: myFlags,
+			// This will get a user registerd into our system
+			// we execute our `signup` command
+			Action: func(c *cli.Context) error {
+				// a simple lookup function
+				file, _ := os.Open(c.String("file"))
+				// fi, err := file.Stat()
+				// if err != nil {
+				// 	log.Fatal(err)
+				// }
+				fmt.Println(reflect.TypeOf(file))
+				_, filename := filepath.Split(c.String("file"))
+
+				fmt.Println(filename)
+				header := req.Header{
+					"Content-Type": "multipart/form-data",
+				}
+				r, err := req.Post("https://row2json.herokuapp.com/api", header, req.FileUpload{
+					File:      file,
+					FieldName: "file",   // FieldName is form field name
+					FileName:  filename, //Filename is the name of the file that you wish to upload. We use this to guess the mimetype as well as pass it onto the server
+				})
+				if err != nil {
+					log.Fatal(err)
+				}
+				fmt.Println(r)
+				return nil
+			},
+		},
 	}
 
 	app.Action = func(c *cli.Context) error {
-		fmt.Println("NovaStore CLI up and running")
+		fmt.Println("Welcoe to the Novastore CLI")
 		return nil
 	}
 	err := app.Run(os.Args)
