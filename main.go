@@ -17,28 +17,16 @@ import (
 )
 
 func main() {
-	//authErr := godotenv.Load()
-	//if authErr != nil {
-	//	log.Fatal("Error loading .env file")
-	//}
-	//accessKey := os.Getenv("ACCESS")
-	//secretKey := os.Getenv("SECRET")
-	//format := "\nAccess: %s\nSecret: %s\n"
-	//
-	//_, authErr = fmt.Printf(format, accessKey, secretKey)
-	//if authErr != nil {
-	//	log.Fatal(authErr.Error())
-	//}
 
 	app := cli.NewApp()
 	app.Name = "novastore"
-	app.Usage = "An easier way to store your files on AWS"
+	app.Usage = "An easier way to get your stats and predictions"
 
 	myFlags := []cli.Flag{
 		cli.StringFlag{
 			Name:  "file",
 			Value: "No File Given",
-			Usage: "This uploads a target CSV file to our system to be either predicted on or analyzed",
+			Usage: "This speciciles a CSV file to our system to be either predicted on or analyzed",
 		},
 		cli.StringFlag{
 			Name:  "email",
@@ -57,8 +45,7 @@ func main() {
 			Name:  "upload",
 			Usage: "Upload a given csv file to be  processed on our server.",
 			Flags: myFlags,
-			// the action, or code that will be executed when
-			// we execute our `upload` command
+			// This uses the following pattern novastoreCLI upload -file path-to-file
 			Action: func(c *cli.Context) error {
 				// a simple lookup function
 				file, _ := os.Open(c.String("file"))
@@ -100,8 +87,6 @@ func main() {
 					log.Fatal(err)
 				}
 				fmt.Println(r)
-				return nil
-
 				return nil
 			},
 		},
@@ -157,14 +142,14 @@ func main() {
 				bodyBuf := &bytes.Buffer{}
 				bodyWriter := multipart.NewWriter(bodyBuf)
 
-				// this step is very important
+				// For the post request, it set up the form name attached to the file for posting. eg file=path-to-fie
 				fileWriter, err := bodyWriter.CreateFormFile("file", c.String("file"))
 				if err != nil {
 					fmt.Println("error writing to buffer")
 					return err
 				}
 
-				// open file handle
+				// Opens the file with that path from the -file flag
 				fh, err := os.Open(c.String("file"))
 				if err != nil {
 					fmt.Println("error opening file")
@@ -172,32 +157,20 @@ func main() {
 				}
 				defer fh.Close()
 
-				//iocopy
+				// Allows copying from source to destination
 				_, err = io.Copy(fileWriter, fh)
 				if err != nil {
 					return err
 				}
 
 				contentType := bodyWriter.FormDataContentType()
-				bodyWriter.Close()
-				// file, _ := os.Open(c.String("file"))
-				// a simple lookup function
-				// fi, err := file.Stat()
-				// if err != nil {
-				// 	log.Fatal(err)
-				// }
+				bodyWriter.Close() // Closing bodyWriter
 
-				// fmt.Println(reflect.TypeOf(file))
-				// _, filename := filepath.Split(c.String("file"))
-
-				// fmt.Println(filename)
-				// header := req.Header{
-				// 	"Content-Type": "multipart/form-data",
-				// }
 				response, err := http.Post("https://row2json.herokuapp.com/api", contentType, bodyBuf)
 				if err != nil {
 					log.Fatal(err)
 				}
+				// Defer closing untill output below is done
 				defer response.Body.Close()
 				body, err := ioutil.ReadAll(response.Body)
 				// fmt.Println(body)
