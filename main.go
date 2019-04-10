@@ -1,9 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"mime/multipart"
+	"net/http"
 	"path/filepath"
-	"reflect"
 
 	"log"
 	"os"
@@ -149,28 +153,56 @@ func main() {
 			// This will get a user registerd into our system
 			// we execute our `signup` command
 			Action: func(c *cli.Context) error {
+
+				bodyBuf := &bytes.Buffer{}
+				bodyWriter := multipart.NewWriter(bodyBuf)
+
+				// this step is very important
+				fileWriter, err := bodyWriter.CreateFormFile("file", c.String("file"))
+				if err != nil {
+					fmt.Println("error writing to buffer")
+					return err
+				}
+
+				// open file handle
+				fh, err := os.Open(c.String("file"))
+				if err != nil {
+					fmt.Println("error opening file")
+					return err
+				}
+				defer fh.Close()
+
+				//iocopy
+				_, err = io.Copy(fileWriter, fh)
+				if err != nil {
+					return err
+				}
+
+				contentType := bodyWriter.FormDataContentType()
+				bodyWriter.Close()
+				// file, _ := os.Open(c.String("file"))
 				// a simple lookup function
-				file, _ := os.Open(c.String("file"))
 				// fi, err := file.Stat()
 				// if err != nil {
 				// 	log.Fatal(err)
 				// }
-				fmt.Println(reflect.TypeOf(file))
-				_, filename := filepath.Split(c.String("file"))
 
-				fmt.Println(filename)
-				header := req.Header{
-					"Content-Type": "multipart/form-data",
-				}
-				r, err := req.Post("https://row2json.herokuapp.com/api", header, req.FileUpload{
-					File:      file,
-					FieldName: "file",   // FieldName is form field name
-					FileName:  filename, //Filename is the name of the file that you wish to upload. We use this to guess the mimetype as well as pass it onto the server
-				})
+				// fmt.Println(reflect.TypeOf(file))
+				// _, filename := filepath.Split(c.String("file"))
+
+				// fmt.Println(filename)
+				// header := req.Header{
+				// 	"Content-Type": "multipart/form-data",
+				// }
+				response, err := http.Post("https://row2json.herokuapp.com/api", contentType, bodyBuf)
 				if err != nil {
 					log.Fatal(err)
 				}
-				fmt.Println(r)
+				defer response.Body.Close()
+				body, err := ioutil.ReadAll(response.Body)
+				// fmt.Println(body)
+				responseJson := string(body)
+				fmt.Println(responseJson)
 				return nil
 			},
 		},
