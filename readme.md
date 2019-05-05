@@ -9,8 +9,8 @@ Please ensure that Golang is installed on your system
 
 
 ### Installing
-To install novastore api️ execute this  follwoing command
- **_go get https://github.com/Novandev/NovastoreCLI_**
+To install Novastore CLI, execute the following command to install the command-line utility into your system
+ **_go install https://github.com/Novandev/NovastoreCLI_**
 
 
 
