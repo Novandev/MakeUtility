@@ -1,33 +1,31 @@
-# Nova Store Command-line utility
-This utility enables users to uplad and view statistical data and estart predictive services (in the future)
+# NovaStore Command-line utility
+This utility enables users view statistical data from their files as well as creating a predictive model for their data
+
+
+
 ### Prerequisites
-Please ensure that golang is installed on your system
+Please ensure that Golang is installed on your system
+
 
 
 ### Installing
 To install novastore api️ execute this  follwoing command
- **_go get https://github.com/Novandev/MakeUtility_**
+ **_go get https://github.com/Novandev/NovastoreCLI_**
 
 
-
-##### How do I send messages then?
 
 
 ## Built With
 
-* [GORM](https://github.com/jinzhu/gorm) - Object Relational Mapper (With the use of an SQLite Database)
+* [MGO](https://gopkg.in/mgo.v2) - Object Relational Mapper (With the use of an SQLite Database)
 * [RowtoJsonAPI](https://github.com/Novandev/RowToJsonApi)
 * [GODOTENV](https://github.com/joho/godotenv) - Used to store secrets such as Twillio authentication credentials and source number
 
 
 
-## Next Features
-1. ML model storage
-2. Create custom api endpoists for predicitons
-
 ## Authors
 
-* **Novan Adamsl** - *Javascript/Golang Developer and Data Scientist* - [LinkedIn](https://www.linkedin.com/in/novan-adams/)
+* **Novan Adams** - *Data Scientist and Developer* - [LinkedIn](https://www.linkedin.com/in/novan-adams/)
 
 ## License
 
