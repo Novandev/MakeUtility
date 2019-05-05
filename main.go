@@ -7,12 +7,15 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"os/user"
 	"path/filepath"
+	"strings"
 
 	"log"
 	"os"
 
 	"github.com/imroc/req"
+	"github.com/jdxcode/netrc"
 	"github.com/urfave/cli"
 )
 
@@ -38,22 +41,41 @@ func main() {
 			Value: "No password given",
 			Usage: "This sets the password for the account to be accessed",
 		},
+		cli.StringFlag{
+			Name:  "target",
+			Value: "No target given to predict",
+			Usage: "This sets value that will be predicted on for a dataset",
+		},
+		cli.StringFlag{
+			Name:  "features",
+			Value: "No features givin to predict on",
+			Usage: "This sets the featurs that the target will be derived from",
+		},
+		cli.StringFlag{
+			Name:  "model_type",
+			Value: "No model type chosen",
+			Usage: "This sets the prediction type of the target.\n 1: Classification\n2: Regression",
+		},
 	}
 
 	app.Commands = []cli.Command{
 		{
-			Name:  "upload",
+			Name:  "make_model",
 			Usage: "Upload a given csv file to be  processed on our server.",
 			Flags: myFlags,
 			// This uses the following pattern novastoreCLI upload -file path-to-file
 			Action: func(c *cli.Context) error {
 				// a simple lookup function
+				target := c.String("target")
+				features := c.String("features")
+				model := c.String("model_type")
 				file, _ := os.Open(c.String("file"))
 
 				_, filename := filepath.Split(c.String("file"))
+				featureString := strings.ReplaceAll(features, ",", "_")
+				s := fmt.Sprintf("http://localhost:3000/make-model?target=%s&features=%s&model=%s", target, featureString, model)
 
-				fmt.Println(filename)
-				r, err := req.Post("http://dca-novanstoreapi.herokuapp.com/upload", req.FileUpload{
+				r, err := req.Post(s, req.FileUpload{
 					File:      file,
 					FieldName: "file",   // FieldName is form field name
 					FileName:  filename, //Filename is the name of the file that you wish to upload. We use this to guess the mimetype as well as pass it onto the server
@@ -73,8 +95,6 @@ func main() {
 			// we execute our `upload` command
 			Action: func(c *cli.Context) error {
 				// a simple lookup function
-				fmt.Println(c.String("username"))
-				fmt.Println(c.String("password"))
 				header := req.Header{
 					"Content-Type": "application/json",
 				}
@@ -98,8 +118,7 @@ func main() {
 			// we execute our `signup` command
 			Action: func(c *cli.Context) error {
 				// a simple lookup function
-				fmt.Println(c.String("email"))
-				fmt.Println(c.String("password"))
+				var response map[string]interface{}
 				header := req.Header{
 					"Content-Type": "application/json",
 				}
@@ -111,22 +130,26 @@ func main() {
 				if err != nil {
 					log.Fatal(err)
 				}
-				fmt.Println(r)
+				r.ToJSON(&response)
+				fmt.Println(response)
 				return nil
 			},
 		},
 		{
-			Name:  "list_file",
-			Usage: "This lists the file that the user can use to do stats, predictions",
+			Name:  "list_model",
+			Usage: "This lists model for the users predictions",
 			Flags: myFlags,
 			// This will get a user registerd into our system
 			// we execute our `signup` command
 			Action: func(c *cli.Context) error {
 				// a simple lookup function
-				fmt.Println(c.String("file"))
-				//if err != nil {
-				//	return err
-				//}
+
+				usr, err := user.Current()
+				n, err := netrc.Parse(filepath.Join(usr.HomeDir, ".netrc"))
+				fmt.Println(n.Machine("api.heroku.com").Get("password"))
+				if err != nil {
+					return err
+				}
 
 				return nil
 			},
@@ -135,8 +158,7 @@ func main() {
 			Name:  "stats",
 			Usage: "returns your statistics on a given file in json format",
 			Flags: myFlags,
-			// This will get a user registerd into our system
-			// we execute our `signup` command
+			// This will get a statitics file from a given csv file returned as a json string
 			Action: func(c *cli.Context) error {
 
 				bodyBuf := &bytes.Buffer{}
