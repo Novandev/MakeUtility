@@ -1,6 +1,7 @@
 <p align="center">
   <img width="460" height="300" src="https://i.imgur.com/oL6WWwg.png">
 </p>
+
 # NovaStore Command-line utility
 This utility enables users view statistical data from their files as well as creating a predictive model for their data
 
