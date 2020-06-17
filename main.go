@@ -204,7 +204,7 @@ func main() {
 	}
 
 	app.Action = func(c *cli.Context) error {
-		fmt.Println("Welcoe to the Novastore CLI")
+		fmt.Println("Welcome to the Novastore CLI")
 		return nil
 	}
 	err := app.Run(os.Args)

@@ -3,4 +3,5 @@ github.com/imroc/req v0.3.0 h1:3EioagmlSG+z+KySToa+Ylo3pTFZs+jh3Brl7ngU12U=
 github.com/imroc/req v0.3.0/go.mod h1:F+NZ+2EFSo6EFXdeIbpfE9hcC233id70kf0byW97Caw=
 github.com/jdxcode/netrc v0.0.0-20190329161231-b36f1c51d91d h1:Io4Ts9W/92wkP9VKQTbGpY5VczamXILBrpz490a1/vw=
 github.com/jdxcode/netrc v0.0.0-20190329161231-b36f1c51d91d/go.mod h1:PSWm5RA4GUQ+cyCXiBIIUjlDWdJci5cU3GVKwaQRmW8=
+github.com/urfave/cli v1.20.0 h1:fDqGv3UG/4jbVl/QkFwEdddtEDjh/5Ov6X+0B/3bPaw=
 github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijbERA=
