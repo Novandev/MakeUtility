@@ -54,14 +54,14 @@ func main() {
 		cli.StringFlag{
 			Name:  "model_type",
 			Value: "No model type chosen",
-			Usage: "This sets the prediction type of the target.\n 1: Classification\n2: Regression",
+			Usage: "This sets the prediction type of the target.\n \t 1: Classification\n \t 2: Regression",
 		},
 	}
 
 	app.Commands = []cli.Command{
 		{
 			Name:  "make_model",
-			Usage: "Upload a given csv file to be  processed on our server.",
+			Usage: "Upload a given csv file to be  processed on our server. \n\t",
 			Flags: myFlags,
 			// This uses the following pattern novastoreCLI upload -file path-to-file
 			Action: func(c *cli.Context) error {
@@ -126,12 +126,15 @@ func main() {
 					"email":    c.String("email"),
 					"password": c.String("password"),
 				}
-				r, err := req.Post("http://dca-novanstoreapi.herokuapp.com/register", header, req.BodyJSON(param))
+				// r, err := req.Post("http://dca-novanstoreapi.herokuapp.com/register", header, req.BodyJSON(param))
+				r, err := req.Post("http://localhost:4000/register", header, req.BodyJSON(param))
+
 				if err != nil {
 					log.Fatal(err)
 				}
 				r.ToJSON(&response)
-				fmt.Println(response)
+
+				fmt.Println(response["Email Registered"])
 				return nil
 			},
 		},
